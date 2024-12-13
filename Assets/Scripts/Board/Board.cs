@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.WSA;
 
 public class Board
 {
@@ -197,6 +198,7 @@ public class Board
 
     internal void FillGapsWithNewItems()
     {
+        //Debug.Log("FillGapsWithNewItems");
         for (int x = 0; x < boardSizeX; x++)
         {
             for (int y = 0; y < boardSizeY; y++)
@@ -206,7 +208,13 @@ public class Board
 
                 NormalItem item = new NormalItem();
 
-                item.SetType(Utils.GetRandomNormalType());
+                var excludedTypes = GetSurroundingItemTypes(cell);
+                var leastAmountList = GetLeastAmountList();
+
+                var type = Utils.GetRandomNormalTypeExceptAndPrioritize(
+                    excludedTypes.ToArray(), leastAmountList.ToArray());
+
+                item.SetType(type);
                 item.SetView();
                 item.SetViewRoot(m_root);
 
@@ -214,6 +222,51 @@ public class Board
                 cell.ApplyItemPosition(true);
             }
         }
+    }
+
+    internal List<NormalItem.eNormalType>  GetLeastAmountList()
+    {
+        var typeCounts = new Dictionary<NormalItem.eNormalType, int>();
+
+        foreach (NormalItem.eNormalType type in Enum.GetValues(typeof(NormalItem.eNormalType)))
+        {
+            typeCounts[type] = 0;
+        }
+
+        for (int x = 0; x < boardSizeX; x++)
+        {
+            for (int y = 0; y < boardSizeY; y++)
+            {
+                Cell cell = m_cells[x, y];
+                if (cell.Item is NormalItem item)
+                {
+                    typeCounts[item.ItemType]++;
+                }
+            }
+        }
+
+        var result = typeCounts.OrderByDescending(x => x.Value).Select(y => y.Key).ToList();
+        //Debug.Log(string.Join(", ", result));
+        return result;
+    }
+
+    internal List<NormalItem.eNormalType> GetSurroundingItemTypes(Cell cell)
+    {
+        var surroundingTypes = new List<NormalItem.eNormalType>();
+
+        if (cell.NeighbourUp != null && cell.NeighbourUp.Item is NormalItem topItem)
+            surroundingTypes.Add(topItem.ItemType);
+
+        if (cell.NeighbourBottom != null && cell.NeighbourBottom.Item is NormalItem bottomItem)
+            surroundingTypes.Add(bottomItem.ItemType);
+
+        if (cell.NeighbourLeft != null && cell.NeighbourLeft.Item is NormalItem leftItem)
+            surroundingTypes.Add(leftItem.ItemType);
+
+        if (cell.NeighbourRight != null && cell.NeighbourRight.Item is NormalItem rightItem)
+            surroundingTypes.Add(rightItem.ItemType);
+
+        return surroundingTypes;
     }
 
     internal void ExplodeAllItems()

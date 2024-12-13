@@ -24,4 +24,16 @@ public class Utils
 
         return result;
     }
+
+    public static NormalItem.eNormalType GetRandomNormalTypeExceptAndPrioritize(
+        NormalItem.eNormalType[] except,
+        NormalItem.eNormalType[] prioritize)
+    {
+        List<NormalItem.eNormalType> list = prioritize.ToList().Except(except).ToList();
+
+        int rnd = URandom.Range(0, list.Count);
+        NormalItem.eNormalType result = list[rnd];
+
+        return result;
+    }
 }
