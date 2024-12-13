@@ -46,6 +46,18 @@ public class BoardController : MonoBehaviour
         Fill();
     }
 
+    public NormalItem.eNormalType[][] GetBoardData()
+    {
+        return m_board.GetCurrentBoards();
+    }
+
+    public void Fill(NormalItem.eNormalType[][] boardData)
+    {
+        m_board.ClearAllItems();
+        m_board.Fill(boardData);
+        FindMatchesAndCollapse();
+    }
+
     private void Fill()
     {
         m_board.Fill();

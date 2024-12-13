@@ -75,19 +75,60 @@ public class Board
                 if (x > 0) m_cells[x, y].NeighbourLeft = m_cells[x - 1, y];
             }
         }
-
-
-        //TODO save board
     }
 
-    private void SaveBoard()
+    public NormalItem.eNormalType[][] GetCurrentBoards()
     {
-
+        var result = new NormalItem.eNormalType[boardSizeX][];
+        for (int x = 0; x < boardSizeX; x++)
+        {
+            result[x] = new NormalItem.eNormalType[boardSizeY]; 
+            for (int y = 0; y < boardSizeY; y++)
+            {
+                Cell cell = m_cells[x, y];
+                NormalItem item = cell.Item as NormalItem;
+                result[x][y] = item.ItemType;
+            }
+        }
+        return result;
     }
 
-    public void ResetLevel()
+    public void Fill(NormalItem.eNormalType[][] boardDatas)
     {
+        for (int x = 0; x < boardSizeX; x++)
+        {
+            for (int y = 0; y < boardSizeY; y++)
+            {
+                Cell cell = m_cells[x, y];
+                NormalItem item = new NormalItem();
 
+                List<NormalItem.eNormalType> types = new List<NormalItem.eNormalType>();
+                if (cell.NeighbourBottom != null)
+                {
+                    NormalItem nitem = cell.NeighbourBottom.Item as NormalItem;
+                    if (nitem != null)
+                    {
+                        types.Add(nitem.ItemType);
+                    }
+                }
+
+                if (cell.NeighbourLeft != null)
+                {
+                    NormalItem nitem = cell.NeighbourLeft.Item as NormalItem;
+                    if (nitem != null)
+                    {
+                        types.Add(nitem.ItemType);
+                    }
+                }
+
+                item.SetType(boardDatas[x][y]);
+                item.SetView();
+                item.SetViewRoot(m_root);
+
+                cell.Assign(item);
+                cell.ApplyItemPosition(false);
+            }
+        }
     }
 
     internal void Fill()
@@ -674,6 +715,18 @@ public class Board
 
                 holder.Assign(item);
                 item.View.DOMove(holder.transform.position, 0.3f);
+            }
+        }
+    }
+
+    public void ClearAllItems()
+    {
+        for (int x = 0; x < boardSizeX; x++)
+        {
+            for (int y = 0; y < boardSizeY; y++)
+            {
+                Cell cell = m_cells[x, y];
+                cell.Clear();
             }
         }
     }
