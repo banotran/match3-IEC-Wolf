@@ -25,8 +25,14 @@ public class Board
 
     private int m_matchMin;
 
+    public static GameSettings GameSettings;
+    public static int ThemeId;
+
     public Board(Transform transform, GameSettings gameSettings)
     {
+        GameSettings = gameSettings;
+        ThemeId = PlayerPrefs.GetInt("theme");
+
         m_root = transform;
 
         m_matchMin = gameSettings.MatchesMin;
@@ -69,6 +75,18 @@ public class Board
                 if (x > 0) m_cells[x, y].NeighbourLeft = m_cells[x - 1, y];
             }
         }
+
+
+        //TODO save board
+    }
+
+    private void SaveBoard()
+    {
+
+    }
+
+    public void ResetLevel()
+    {
 
     }
 

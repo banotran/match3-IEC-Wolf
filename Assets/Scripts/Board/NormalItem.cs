@@ -22,34 +22,22 @@ public class NormalItem : Item
         ItemType = type;
     }
 
+    public override void SetView()
+    {
+        base.SetView();
+
+        if (View != null)
+        {
+            var sprRend = View.GetComponent<SpriteRenderer>();
+            if (sprRend != null) {
+                sprRend.sprite = Board.GameSettings.GetItemSprite(Board.ThemeId, (int)ItemType);
+            }
+        }
+    }
+
     protected override string GetPrefabName()
     {
-        string prefabname = string.Empty;
-        switch (ItemType)
-        {
-            case eNormalType.TYPE_ONE:
-                prefabname = Constants.PREFAB_NORMAL_TYPE_ONE;
-                break;
-            case eNormalType.TYPE_TWO:
-                prefabname = Constants.PREFAB_NORMAL_TYPE_TWO;
-                break;
-            case eNormalType.TYPE_THREE:
-                prefabname = Constants.PREFAB_NORMAL_TYPE_THREE;
-                break;
-            case eNormalType.TYPE_FOUR:
-                prefabname = Constants.PREFAB_NORMAL_TYPE_FOUR;
-                break;
-            case eNormalType.TYPE_FIVE:
-                prefabname = Constants.PREFAB_NORMAL_TYPE_FIVE;
-                break;
-            case eNormalType.TYPE_SIX:
-                prefabname = Constants.PREFAB_NORMAL_TYPE_SIX;
-                break;
-            case eNormalType.TYPE_SEVEN:
-                prefabname = Constants.PREFAB_NORMAL_TYPE_SEVEN;
-                break;
-        }
-
+        string prefabname = Constants.PREFAB_NORMAL;
         return prefabname;
     }
 
